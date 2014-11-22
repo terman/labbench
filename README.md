@@ -20,8 +20,10 @@ Usage:
 
 tname is used as a key to select the appropriate shared tool_state
 
-URL referes to an HTML file to be loaded into the iframe used to
-display the design tool.
+URL referes to content to be loaded into the enclosing iframe.  It
+is recommended that the content be uploaded as part of the static
+content of the course and accessed using the appropriate 
+embed URL (see Content -> Files & Uploads in edX Studio).
 
 This XBlock provides the following handlers:
 
@@ -42,11 +44,15 @@ This XBlock provides the following handlers:
 `publish({event_type: X, event: Y})`
   publish an event of the specified type and event dictionary
 
-You would invoke the handlers from within the iframe using
+One would invoke the handlers from within the iframe using
 [jschannel.js](https://github.com/mozilla/jschannel).  For example:
 
+    <script type="text/javascript" src="jschannel.js"></script>
+    <script>
     // set up communication with parent frame
-    var chan = Channel.build({window: window.parent, origin: "*", scope: "labbench"});
+    var chan = Channel.build({window: window.parent,
+                              origin: "*",
+                              scope: "labbench"});
     
     // to send state to server (must be JSON compatible)
     var state = {...};    // build a state dictionary
@@ -63,4 +69,5 @@ You would invoke the handlers from within the iframe using
                            // do something with state dictionary
                         }
               });
+    </script>
 
