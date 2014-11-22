@@ -26,6 +26,7 @@ function LabBenchXBlock(runtime, element) {
                     type: "POST",
                     url: url,
                     data: JSON.stringify(params || ''),
+                    dataType: 'json',
                     success: function(result) {
                         // return result to caller in iframe
                         trans.complete(result);

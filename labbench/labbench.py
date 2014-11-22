@@ -1,6 +1,6 @@
 "TO-DO: Write a description of what this XBlock is."""
 
-import pkg_resources
+import pkg_resources,json
 
 from xblock.core import XBlock
 from xblock.fields import Scope, UserScope, BlockScope, String, Dict
@@ -31,37 +31,37 @@ class LabBenchXBlock(XBlock):
     This XBlock provides the following handlers:
 
     get_problem_state()  [default value ""]
-      returns state string for the current student and labbench instance.
+      returns JSON state for the current student and labbench instance.
 
     put_problem_state(s)
-      save the string s as the current problem state
+      save the JSON state s as the current problem state
 
     get_tool_state()     [default value ""]
-      returns state string for the current student and tool specified
+      returns JSON state for the current student and tool specified
       by the "tool" attribute.
 
     put_tool_state(s)
-      save the string s as the current tool state for the tool specified
+      save the JSON state s as the current tool state for the tool specified
       by the "tool" attribute.
 
     publish({event_type: X, event: Y})
       publish an event of the specified type and event dictionary
     """
 
-    has_score = true         # lab benches are graded
+    has_score = True         # lab benches are graded
     icon_class = 'problem'   # icon to use in the sequence header
 
     # attributes from the labbench tag
     src = String(default="", scope=Scope.content, help="URL for iframe content")
     tool = String(default="tool", scope=Scope.content, help="used as key for tool_state")
-    width = String(default="400px", scope=Scope.content, help="width of enclosing iframe")
+    width = String(default="100%", scope=Scope.content, help="width of enclosing iframe")
     height = String(default="300px", scope=Scope.content, help="height of enclosing iframe")
 
     # two types of persistent storage
-    problem_state = String(default="", scope=Scope.user_state,
-                           help="student's state string for this problem")
-    tool_state = Dict(default={}, scope=Scope(user=UserScope.ONE,block=BlockScope.DEFINITION),
-                      help="student's state string for this tool")
+    problem_state = String(default="{}", scope=Scope.user_state,
+                           help="student's JSON state for this problem")
+    tool_state = Dict(default={}, scope=Scope(user=UserScope.ONE,block=BlockScope.TYPE),
+                      help="student's JSON state for this tool")
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -82,39 +82,39 @@ class LabBenchXBlock(XBlock):
         return frag
 
     @XBlock.json_handler
-    def get_problem_state(self, data):
+    def get_problem_state(self, data, suffix=''):
         """
         returns state string for the current student and labbench instance
         """
-        return self.problem_state;
+        return json.loads(self.problem_state);
 
     @XBlock.json_handler
-    def put_problem_state(self, data):
+    def put_problem_state(self, data, suffix=''):
         """
         save data as the current problem state
         """
-        self.problem_state = data;
+        self.problem_state = json.dumps(data);
         return "okay"
 
     @XBlock.json_handler
-    def get_tool_state(self, data):
+    def get_tool_state(self, data, suffix=''):
         """
         returns state string for the current student and tool specified
         by the "tool" attribute.
         """
-        return self.tool_state.get(self.tool,'')
+        return self.tool_state.get(self.tool,{})
 
     @XBlock.json_handler
-    def put_tool_state(self, data):
+    def put_tool_state(self, data, suffix=''):
         """
         save data as the current tool state for the tool specified
         by the "tool attribute.
         """
-        self.tool_state[self.tool] = data;
+        self.tool_state[self.tool] = data
         return "okay"
 
     @XBlock.json_handler
-    def publish(self, data):
+    def publish(self, data, suffix=''):
         """
         publish an event of the specified type and event dictionary
         """
@@ -128,8 +128,8 @@ class LabBenchXBlock(XBlock):
         return [
             ("LabBenchXBlock",
              """<vertical_demo>
-                <labbench tool="jade" src="http://localhost/jade/test.html"/>
-                <labbench tool="jade" src="http://localhost/jade/test.html"/>
+                <labbench tool="jade" src="/resource/labbench/public/test.html"/>
+                <labbench tool="jade" src="/resource/labbench/public/test.html"/>
                 </vertical_demo>
              """),
         ]
