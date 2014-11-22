@@ -8,7 +8,7 @@ from xblock.fragment import Fragment
 
 class LabBenchXBlock(XBlock):
     """
-    usage: <labbench tool="tname" src="URL"/>
+    usage: <labbench tool="tname" src="URL" width="100%" height="300"/>
 
     tname is used as a key to select the appropriate shared tool_state
 
@@ -55,7 +55,7 @@ class LabBenchXBlock(XBlock):
     src = String(default="", scope=Scope.content, help="URL for iframe content")
     tool = String(default="tool", scope=Scope.content, help="used as key for tool_state")
     width = String(default="100%", scope=Scope.content, help="width of enclosing iframe")
-    height = String(default="300px", scope=Scope.content, help="height of enclosing iframe")
+    height = String(default="300", scope=Scope.content, help="height of enclosing iframe")
 
     # two types of persistent storage
     problem_state = String(default="{}", scope=Scope.user_state,
